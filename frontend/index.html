@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Road Accident Analysis Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="background-anim"></div>
+    <div class="container">
+        <header>
+            <h1>TN Road Accident Dashboard</h1>
+            <p>Interactive analytics and AI-powered risk predictions across districts</p>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- Metrics Cards -->
+            <div class="metrics-container">
+                <div class="metric-card">
+                    <h3>Total Accidents (2020)</h3>
+                    <p id="metric-accidents-2020">Loading...</p>
+                </div>
+                <div class="metric-card">
+                    <h3>Total Accidents (2021)</h3>
+                    <p id="metric-accidents-2021">Loading...</p>
+                </div>
+                <div class="metric-card">
+                    <h3>Total Fatalities (2020)</h3>
+                    <p id="metric-fatal-2020">Loading...</p>
+                </div>
+                <div class="metric-card">
+                    <h3>Total Fatalities (2021)</h3>
+                    <p id="metric-fatal-2021">Loading...</p>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="charts-container">
+                <div class="chart-card">
+                    <h2>2021 Fatalities by Vehicle Type</h2>
+                    <div class="canvas-wrapper">
+                        <canvas id="vehicleChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h2>Top 10 Districts: 2020 vs 2021 Accidents</h2>
+                    <div class="canvas-wrapper">
+                        <canvas id="comparisonChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prediction Section -->
+            <div class="main-content">
+                <div class="form-container">
+                    <h2>AI Risk Predictor</h2>
+                    <p class="section-desc">Select a district to run an AI risk analysis based on live environmental and real-time route conditions.</p>
+                    <form id="prediction-form">
+                        <div class="form-row">
+                            <div class="form-group" style="width: 100%;">
+                                <label for="district_select">Select District</label>
+                                <select id="district_select" required>
+                                    <option value="" disabled selected>Loading districts...</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row" style="display: flex; gap: 1rem; margin-top: 1rem; margin-bottom: 1rem;">
+                            <div class="form-group" style="flex: 1;">
+                                <label for="temperature">Temperature (°C)</label>
+                                <input type="number" id="temperature" step="0.1" value="28.0" required>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label for="rainfall">Rainfall (mm)</label>
+                                <input type="number" id="rainfall" step="0.1" value="0.0" required>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label for="visibility">Visibility (km)</label>
+                                <input type="number" id="visibility" step="0.1" value="10.0" required>
+                            </div>
+                        </div>
+
+                        <!-- Hidden fields to store data for submission -->
+                        <input type="hidden" id="district_total_2020">
+                        <input type="hidden" id="district_fatal_2020">
+                        <input type="hidden" id="district_lat">
+                        <input type="hidden" id="district_lon">
+
+                        <div class="district-stats hidden" id="district-preview">
+                            <p><strong>District Base Data:</strong> <span id="preview-text"></span></p>
+                        </div>
+
+                        <button type="submit" id="predict-btn" class="primary-btn" disabled>Analyze Today's Route Risk</button>
+                    </form>
+                </div>
+
+                <div class="results-container hidden" id="results-section">
+                    <h2>Risk Analysis Result</h2>
+                    <div class="risk-badge" id="risk-badge">
+                        <div class="risk-level" id="risk-level">Low Risk</div>
+                    </div>
+                    
+                    <div class="district-stats" style="margin-bottom: 2rem; border-left-color: #f59e0b;">
+                        <p><strong>Live Environmental Context Evaluated:</strong></p>
+                        <p id="weather-context-display" style="font-size: 0.95rem; margin-top: 0.5rem;"></p>
+                    </div>
+                    
+                    <div class="probabilities">
+                        <h3>Probability Breakdown</h3>
+                        
+                        <div class="prob-bar-container">
+                            <div class="prob-label"><span>Low Risk</span> <span id="prob-low-val">0%</span></div>
+                            <div class="prob-bar-bg"><div class="prob-bar fill-low" id="prob-low"></div></div>
+                        </div>
+                        
+                        <div class="prob-bar-container">
+                            <div class="prob-label"><span>Medium Risk</span> <span id="prob-med-val">0%</span></div>
+                            <div class="prob-bar-bg"><div class="prob-bar fill-med" id="prob-med"></div></div>
+                        </div>
+                        
+                        <div class="prob-bar-container">
+                            <div class="prob-label"><span>High Risk</span> <span id="prob-high-val">0%</span></div>
+                            <div class="prob-bar-bg"><div class="prob-bar fill-high" id="prob-high"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
