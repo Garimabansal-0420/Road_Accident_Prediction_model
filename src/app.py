@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import joblib
@@ -193,3 +194,6 @@ def predict(request: PredictRequest):
         },
         weather_context=weather_ctx
     )
+
+# Mount the frontend static files at the root
+app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")

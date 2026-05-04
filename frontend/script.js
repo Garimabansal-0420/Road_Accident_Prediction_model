@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8000";
+const BASE_URL = " https://road-accident-prediction-model.onrender.com";
 
 document.addEventListener('DOMContentLoaded', () => {
     // Elements
