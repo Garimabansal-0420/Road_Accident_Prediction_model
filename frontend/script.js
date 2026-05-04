@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const response = await fetch(`${BASE_URL}/dashboard/summary`);
         if (!response.ok) return;
         const data = await response.json();
-        
+
         document.getElementById('metric-accidents-2020').textContent = data.total_accidents_2020.toLocaleString();
         document.getElementById('metric-accidents-2021').textContent = data.total_accidents_2021.toLocaleString();
         document.getElementById('metric-fatal-2020').textContent = data.total_deaths_2020.toLocaleString();
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 labels: ['Lorries', 'Buses', 'Cars/Jeeps', '3-Wheelers', '2-Wheelers', 'Others'],
                 datasets: [{
                     data: [
-                        data.lorries, data.buses, data.cars_jeeps, 
+                        data.lorries, data.buses, data.cars_jeeps,
                         data.three_wheelers, data.two_wheelers, data.others
                     ],
                     backgroundColor: [
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'right', labels: { color: '#f8fafc' } }
+                    legend: { position: 'right', labels: { color: '#111111', font: { family: "'Outfit', sans-serif", weight: '500' } } }
                 }
             }
         });
@@ -97,11 +97,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
-                    y: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#94a3b8' } },
-                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                    y: { 
+                        grid: { color: '#e7dec2' }, 
+                        ticks: { color: '#111111', font: { family: "'Outfit', sans-serif", weight: '500' } } 
+                    },
+                    x: { 
+                        grid: { display: false }, 
+                        ticks: { color: '#111111', font: { family: "'Outfit', sans-serif", weight: '500' } } 
+                    }
                 },
                 plugins: {
-                    legend: { labels: { color: '#f8fafc' } }
+                    legend: { labels: { color: '#111111', font: { family: "'Outfit', sans-serif", weight: '500' } } }
                 }
             }
         });
@@ -111,9 +117,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const response = await fetch(`${BASE_URL}/districts`);
         if (!response.ok) return;
         const { districts } = await response.json();
-        
+
         districtData = districts;
-        
+
         districtSelect.innerHTML = '<option value="" disabled selected>Select a District...</option>';
         districts.forEach(d => {
             const opt = document.createElement('option');
@@ -131,22 +137,22 @@ document.addEventListener('DOMContentLoaded', () => {
             districtFatal2020.value = selected.fatal_2020;
             districtLat.value = selected.latitude;
             districtLon.value = selected.longitude;
-            
+
             previewText.innerHTML = `${selected.total_2020} accidents in 2020, with ${selected.fatal_2020} fatalities.<br><small style="color: #64748b;">Fetching live environmental data...</small>`;
             previewDiv.classList.remove('hidden');
             predictBtn.disabled = false;
-            
+
             // Fetch live environmental data using Open-Meteo API
             try {
                 const tempInput = document.getElementById('temperature');
                 const rainInput = document.getElementById('rainfall');
                 const visInput = document.getElementById('visibility');
-                
+
                 // Clear existing values to show it's updating
                 tempInput.value = '';
                 rainInput.value = '';
                 visInput.value = '';
-                
+
                 const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${selected.latitude}&longitude=${selected.longitude}&current=temperature_2m,rain,visibility`);
                 if (response.ok) {
                     const data = await response.json();
@@ -177,10 +183,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle Prediction Submit
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         predictBtn.textContent = "Analyzing...";
         predictBtn.disabled = true;
-        
+
         const payload = {
             total_2020: parseFloat(districtTotal2020.value),
             fatal_2020: parseFloat(districtFatal2020.value),
@@ -190,16 +196,16 @@ document.addEventListener('DOMContentLoaded', () => {
             rainfall: parseFloat(document.getElementById('rainfall').value),
             visibility: parseFloat(document.getElementById('visibility').value)
         };
-        
+
         try {
             const response = await fetch(`${BASE_URL}/predict`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
-            
+
             if (!response.ok) throw new Error("API Error");
-            
+
             const result = await response.json();
             displayResults(result);
         } catch (error) {
@@ -214,18 +220,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const section = document.getElementById('results-section');
         section.classList.remove('hidden');
         setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-        
+
         const badge = document.getElementById('risk-badge');
         const levelText = document.getElementById('risk-level');
         const weatherContextDisplay = document.getElementById('weather-context-display');
-        
+
         badge.className = 'risk-badge'; // reset
         if (data.risk_level === "Low") badge.classList.add('risk-low');
         else if (data.risk_level === "Medium") badge.classList.add('risk-med');
         else if (data.risk_level === "High") badge.classList.add('risk-high');
-        
+
         levelText.textContent = `${data.risk_level} Travel Risk for Today`;
-        
+
         if (data.weather_context) {
             weatherContextDisplay.innerHTML = `
                 <strong>Temp:</strong> ${data.weather_context.temperature}°C &nbsp;|&nbsp; 
@@ -235,12 +241,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 <strong>Traffic:</strong> ~${data.weather_context.traffic_volume} vehicles/hr
             `;
         }
-        
+
         updateBar('low', data.probabilities["Low"]);
         updateBar('med', data.probabilities["Medium"]);
         updateBar('high', data.probabilities["High"]);
     }
-    
+
     function updateBar(type, prob) {
         const percent = Math.round(prob * 100);
         document.getElementById(`prob-${type}-val`).textContent = `${percent}%`;
